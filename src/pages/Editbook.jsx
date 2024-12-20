@@ -19,7 +19,7 @@ function Editbook() {
     axios.get(`https://book-store-bacend.onrender.com/books/${id}`)
     .then((response)=>{
       setTitle(response.data.title)
-      setAuthor(response.data.title)
+      setAuthor(response.data.author)
       setPublishYear(response.data.publishYear)
       setLoading(false)
     }).catch((err)=>{
@@ -28,25 +28,41 @@ function Editbook() {
       alert('check console')
     })
   },[])
-  const handleEditBook=()=>{
-    const data={
+  const handleEditBook = () => {
+    const data = {
       title,
       author,
       publishYear
-    }
-    setLoading(true);
-    axios.put(`http://localhost:5555/books/${id}`,data)
-    .then(()=>{
-      setLoading(false)
-      navigate('/')
-      alert('Book Saved successFully')
-    }).catch((err)=>{
-      console.log(err)
-      setLoading(false)
-      alert("check console,error happend")
-    })
-
-  }
+    };
+  
+    setLoading(true); // Show loading state (e.g., spinner or disable form)
+  
+    axios.put(`http://localhost:5555/books/${id}`, data)
+      .then((response) => {
+        setLoading(false); // Hide loading state after the request completes
+  
+        // Check if the response status is 200 (OK)
+        if (response.status === 200) {
+          navigate('/'); // Navigate to the homepage or another route after successful update
+          alert('Book updated successfully');
+        } else {
+          // Handle any other unexpected response
+          alert('Something went wrong! Please try again.');
+        }
+      })
+      .catch((err) => {
+        setLoading(false); // Hide loading state in case of an error
+        console.log(err); // Log error details for debugging
+  
+        // Display a more detailed error message if available
+        if (err.response) {
+          alert(`Error: ${err.response.data.message || 'An error occurred while updating the book'}`);
+        } else {
+          alert('Error: Unable to update the book. Please try again later.');
+        }
+      });
+  };
+  
   return (
     <div className='p-4'>
       <BackButton/>
